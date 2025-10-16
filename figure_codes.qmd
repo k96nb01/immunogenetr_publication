@@ -131,7 +131,7 @@ GL_string %>% HLA_truncate (fields = 2, remove_duplicates = TRUE)
 ```
 
 ::: {.subtitle}
-Figure five
+Supplemental figure 1
 :::
 
 ```{r, echo = FALSE}
