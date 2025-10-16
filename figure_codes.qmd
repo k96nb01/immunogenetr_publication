@@ -62,15 +62,36 @@ Figure one
 ```{r}
 
 # Adjust data
+HLA_typing_1 <- HLA_typing_1[, -5]
+HLA_typing_1 <- HLA_typing_1[, -4]
 HLA_typing_1 <- HLA_typing_1 %>% rename_with(~ paste0("m", .x), -1)
 HLA_typing_1 <- HLA_typing_1 %>% rename_with(~ paste0(.x, "Cd"), -1)
 HLA_typing_1 <- HLA_typing_1[c(1, 2, 6), ]
 HLA_typing_1[3, 1] <- 3
-HLA_typing_1[2, 3] <- "A*02:01"
-HLA_typing_1[2, 9] <- "DRB3*01:01"
-names(HLA_typing_1)[8] <- "mDRB3451Cd"
-names(HLA_typing_1)[9] <- "mDRB3452Cd"
+HLA_typing_1 <- HLA_typing_1[, 1:9]
+
+names(HLA_typing_1)[6] <- "mDRB3451Cd"
+names(HLA_typing_1)[7] <- "mDRB3452Cd"
+names(HLA_typing_1)[8] <- "mDRB11Cd"
+names(HLA_typing_1)[9] <- "mDRB12Cd"
+HLA_typing_1[2, 3] <- "blank"
+HLA_typing_1[2, 9] <- "DRB1*03:01"
+
+HLA_typing_1$mA1Cd <- sub("^A\\*", "", HLA_typing_1$mA1Cd)
+HLA_typing_1$mA2Cd <- sub("^A\\*", "", HLA_typing_1$mA2Cd)
+
+HLA_typing_1$mB1Cd <- sub("^B\\*", "", HLA_typing_1$mB1Cd)
+HLA_typing_1$mB2Cd <- sub("^B\\*", "", HLA_typing_1$mB2Cd)
+
+HLA_typing_1$mDRB3451Cd <- sub("^DRB", "", HLA_typing_1$mDRB3451Cd)
+HLA_typing_1$mDRB3452Cd <- sub("^DRB", "", HLA_typing_1$mDRB3452Cd)
+
+HLA_typing_1$mDRB11Cd <- sub("^DRB", "", HLA_typing_1$mDRB11Cd)
+HLA_typing_1$mDRB12Cd <- sub("^DRB", "", HLA_typing_1$mDRB12Cd)
+
 print(HLA_typing_1)
+
+
 
 # Build GL strings 
 GL_strings <- HLA_typing_1 %>%
@@ -106,6 +127,13 @@ Figure three
 :::
 
 ```{r}
+#Adjust data
+HLA_typing_LIS[1, 2] <- "24:02novel"
+HLA_typing_LIS[2, 3] <- "74:01N"
+HLA_typing_LIS[3, 3] <- "32:XX"
+HLA_typing_LIS[3, 5] <- "blank"
+
+# Run HLA_validate()
 HLA_typing_LIS %>%
    mutate(
      across(

@@ -124,25 +124,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust data</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>HLA_typing_1 <span class="ot">&lt;-</span> HLA_typing_1 <span class="sc">%&gt;%</span> <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">paste0</span>(<span class="st">"m"</span>, .x), <span class="sc">-</span><span class="dv">1</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>HLA_typing_1 <span class="ot">&lt;-</span> HLA_typing_1 <span class="sc">%&gt;%</span> <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">paste0</span>(.x, <span class="st">"Cd"</span>), <span class="sc">-</span><span class="dv">1</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>HLA_typing_1 <span class="ot">&lt;-</span> HLA_typing_1[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">6</span>), ]</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>HLA_typing_1[<span class="dv">3</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>HLA_typing_1[<span class="dv">2</span>, <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">"A*02:01"</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>HLA_typing_1[<span class="dv">2</span>, <span class="dv">9</span>] <span class="ot">&lt;-</span> <span class="st">"DRB3*01:01"</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(HLA_typing_1)[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="st">"mDRB3451Cd"</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(HLA_typing_1)[<span class="dv">9</span>] <span class="ot">&lt;-</span> <span class="st">"mDRB3452Cd"</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(HLA_typing_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>HLA_typing_1 <span class="ot">&lt;-</span> HLA_typing_1[, <span class="sc">-</span><span class="dv">5</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>HLA_typing_1 <span class="ot">&lt;-</span> HLA_typing_1[, <span class="sc">-</span><span class="dv">4</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>HLA_typing_1 <span class="ot">&lt;-</span> HLA_typing_1 <span class="sc">%&gt;%</span> <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">paste0</span>(<span class="st">"m"</span>, .x), <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>HLA_typing_1 <span class="ot">&lt;-</span> HLA_typing_1 <span class="sc">%&gt;%</span> <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">paste0</span>(.x, <span class="st">"Cd"</span>), <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>HLA_typing_1 <span class="ot">&lt;-</span> HLA_typing_1[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">6</span>), ]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>HLA_typing_1[<span class="dv">3</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>HLA_typing_1 <span class="ot">&lt;-</span> HLA_typing_1[, <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(HLA_typing_1)[<span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="st">"mDRB3451Cd"</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(HLA_typing_1)[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="st">"mDRB3452Cd"</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(HLA_typing_1)[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="st">"mDRB11Cd"</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(HLA_typing_1)[<span class="dv">9</span>] <span class="ot">&lt;-</span> <span class="st">"mDRB12Cd"</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>HLA_typing_1[<span class="dv">2</span>, <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">"blank"</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>HLA_typing_1[<span class="dv">2</span>, <span class="dv">9</span>] <span class="ot">&lt;-</span> <span class="st">"DRB1*03:01"</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>mA1Cd <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"^A</span><span class="sc">\\</span><span class="st">*"</span>, <span class="st">""</span>, HLA_typing_1<span class="sc">$</span>mA1Cd)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>mA2Cd <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"^A</span><span class="sc">\\</span><span class="st">*"</span>, <span class="st">""</span>, HLA_typing_1<span class="sc">$</span>mA2Cd)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>mB1Cd <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"^B</span><span class="sc">\\</span><span class="st">*"</span>, <span class="st">""</span>, HLA_typing_1<span class="sc">$</span>mB1Cd)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>mB2Cd <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"^B</span><span class="sc">\\</span><span class="st">*"</span>, <span class="st">""</span>, HLA_typing_1<span class="sc">$</span>mB2Cd)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>mDRB3451Cd <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"^DRB"</span>, <span class="st">""</span>, HLA_typing_1<span class="sc">$</span>mDRB3451Cd)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>mDRB3452Cd <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"^DRB"</span>, <span class="st">""</span>, HLA_typing_1<span class="sc">$</span>mDRB3452Cd)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>mDRB11Cd <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"^DRB"</span>, <span class="st">""</span>, HLA_typing_1<span class="sc">$</span>mDRB11Cd)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>mDRB12Cd <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"^DRB"</span>, <span class="st">""</span>, HLA_typing_1<span class="sc">$</span>mDRB12Cd)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(HLA_typing_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 19
-  patient mA1Cd   mA2Cd  mC1Cd mC2Cd mB1Cd mB2Cd mDRB3451Cd mDRB3452Cd mDRB1_1Cd
-    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;    
-1       1 A*24:02 A*29:… C*07… C*16… B*44… B*44… DRB5*01:01 DRB5*01:01 DRB1*15:…
-2       2 A*02:01 A*02:… C*07… C*07… B*07… B*08… DRB3*01:01 DRB3*01:01 DRB1*03:…
-3       3 A*01:01 A*24:… C*07… C*14… B*49… B*51… DRB3*03:01 DRBX*NNNN  DRB1*08:…
-# ℹ 9 more variables: mDRB1_2Cd &lt;chr&gt;, mDQA1_1Cd &lt;chr&gt;, mDQA1_2Cd &lt;chr&gt;,
-#   mDQB1_1Cd &lt;chr&gt;, mDQB1_2Cd &lt;chr&gt;, mDPA1_1Cd &lt;chr&gt;, mDPA1_2Cd &lt;chr&gt;,
-#   mDPB1_1Cd &lt;chr&gt;, mDPB1_2Cd &lt;chr&gt;</code></pre>
+<pre><code># A tibble: 3 × 9
+  patient mA1Cd mA2Cd mB1Cd mB2Cd mDRB3451Cd mDRB3452Cd mDRB11Cd mDRB12Cd
+    &lt;int&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;   
+1       1 24:02 29:02 44:02 44:03 5*01:01    5*01:01    1*15:01  1*15:01 
+2       2 02:01 blank 07:02 08:01 3*01:01    4*01:03    1*03:01  1*03:01 
+3       3 01:01 24:02 49:01 51:01 3*03:01    X*NNNN     1*08:01  1*13:02 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build GL strings </span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>GL_strings <span class="ot">&lt;-</span> HLA_typing_1 <span class="sc">%&gt;%</span></span>
@@ -159,9 +175,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code># A tibble: 3 × 2
   patient GL_string                                                             
     &lt;int&gt; &lt;chr&gt;                                                                 
-1       1 HLA-A*24:02+HLA-A*29:02^HLA-C*07:04+HLA-C*16:01^HLA-B*44:02+HLA-B*44:…
-2       2 HLA-A*02:01+HLA-A*02:01^HLA-C*07:01+HLA-C*07:02^HLA-B*07:02+HLA-B*08:…
-3       3 HLA-A*01:01+HLA-A*24:02^HLA-C*07:01+HLA-C*14:02^HLA-B*49:01+HLA-B*51:…</code></pre>
+1       1 HLA-A*24:02+HLA-A*29:02^HLA-B*44:02+HLA-B*44:03^HLA-DRB5*01:01+HLA-DR…
+2       2 HLA-A*02:01^HLA-B*07:02+HLA-B*08:01^HLA-DRB3*01:01^HLA-DRB4*01:03     
+3       3 HLA-A*01:01+HLA-A*24:02^HLA-B*49:01+HLA-B*51:01^HLA-DRB3*03:01        </code></pre>
 </div>
 </div>
 <div class="subtitle">
