@@ -11,7 +11,7 @@ smooth-scroll: true
   text-align: left;
   margin: 1.25rem 0 0.75rem;
   font-family: var(--bs-font-sans-serif); 
-  font-weight: 520;                
+  font-weight: 500;                
   line-height: 1.0;
   font-size: 1.5rem;                       
   color: navy;        
@@ -129,51 +129,6 @@ GL_string %>% HLA_truncate (fields = 2)
 GL_string %>% HLA_truncate (fields = 2, remove_duplicates = TRUE)
 
 ```
-
-::: {.subtitle}
-Supplemental figure 1
-:::
-
-```{r, echo = FALSE}
-reset_data()
-```
-
-```{r}
-HLA_typing_1$A1 <- substr(HLA_typing_1$A1, 3, nchar(HLA_typing_1$A1))
-HLA_typing_1$A2 <- substr(HLA_typing_1$A2, 3, nchar(HLA_typing_1$A2))
-HLA_typing_1$C1 <- substr(HLA_typing_1$C1, 3, nchar(HLA_typing_1$C1))
-HLA_typing_1$C2 <- substr(HLA_typing_1$C2, 3, nchar(HLA_typing_1$C2))
-HLA_typing_1$B1 <- substr(HLA_typing_1$B1, 3, nchar(HLA_typing_1$B1))
-HLA_typing_1$B2 <- substr(HLA_typing_1$B2, 3, nchar(HLA_typing_1$B2))
-
-# Build GL strings 
-gl_strings <- HLA_typing_1 %>% 
-  mutate(GL_string = HLA_columns_to_GLstring(., HLA_typing_columns = A1:DPB1_2), .after = patient) %>%
-  select(patient, GL_string)
-
-# Select recipient and donor GL strings
-recipient <- gl_strings %>% filter(patient == 1) %>% pull(GL_string)
-donors <- gl_strings %>% filter(patient %in% 2:5) %>% transmute(donor = patient, donors = GL_string)
-
-# Run HCT summary function on all donors with given recipient in both "Xof8" and "Xof10" matching
-results <- donors %>%
-  mutate(
-    match_8 = map_int(donors, ~ HLA_match_summary_HCT(
-      GL_string_recip = recipient, 
-      GL_string_donor = .x,
-      match_grade = "Xof8")
-      ),
-    match_10 = map_int(donors, ~ HLA_match_summary_HCT(
-      GL_string_recip = recipient,
-      GL_string_donor = .x,
-      match_grade = "Xof10"
-    ))
-  )
-
-print(results)
-```
-
-
 
 ::: {.subtitle}
 Supplemental table 1 links

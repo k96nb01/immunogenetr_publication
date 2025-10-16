@@ -103,7 +103,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
   margin: 1.25rem 0 0.75rem;
   font-family: var(--bs-font-sans-serif); 
-  font-weight: 520;                
+  font-weight: 500;                
   line-height: 1.0;
   font-size: 1.5rem;                       
   color: navy;        
@@ -249,52 +249,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>GL_string <span class="sc">%&gt;%</span> <span class="fu">HLA_truncate</span> (<span class="at">fields =</span> <span class="dv">2</span>, <span class="at">remove_duplicates =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "HLA-DQA1*03:03"</code></pre>
-</div>
-</div>
-<div class="subtitle">
-<p>Supplemental figure 1</p>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>A1 <span class="ot">&lt;-</span> <span class="fu">substr</span>(HLA_typing_1<span class="sc">$</span>A1, <span class="dv">3</span>, <span class="fu">nchar</span>(HLA_typing_1<span class="sc">$</span>A1))</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>A2 <span class="ot">&lt;-</span> <span class="fu">substr</span>(HLA_typing_1<span class="sc">$</span>A2, <span class="dv">3</span>, <span class="fu">nchar</span>(HLA_typing_1<span class="sc">$</span>A2))</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>C1 <span class="ot">&lt;-</span> <span class="fu">substr</span>(HLA_typing_1<span class="sc">$</span>C1, <span class="dv">3</span>, <span class="fu">nchar</span>(HLA_typing_1<span class="sc">$</span>C1))</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>C2 <span class="ot">&lt;-</span> <span class="fu">substr</span>(HLA_typing_1<span class="sc">$</span>C2, <span class="dv">3</span>, <span class="fu">nchar</span>(HLA_typing_1<span class="sc">$</span>C2))</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>B1 <span class="ot">&lt;-</span> <span class="fu">substr</span>(HLA_typing_1<span class="sc">$</span>B1, <span class="dv">3</span>, <span class="fu">nchar</span>(HLA_typing_1<span class="sc">$</span>B1))</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>HLA_typing_1<span class="sc">$</span>B2 <span class="ot">&lt;-</span> <span class="fu">substr</span>(HLA_typing_1<span class="sc">$</span>B2, <span class="dv">3</span>, <span class="fu">nchar</span>(HLA_typing_1<span class="sc">$</span>B2))</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Build GL strings </span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>gl_strings <span class="ot">&lt;-</span> HLA_typing_1 <span class="sc">%&gt;%</span> </span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">GL_string =</span> <span class="fu">HLA_columns_to_GLstring</span>(., <span class="at">HLA_typing_columns =</span> A1<span class="sc">:</span>DPB1_2), <span class="at">.after =</span> patient) <span class="sc">%&gt;%</span></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(patient, GL_string)</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Select recipient and donor GL strings</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>recipient <span class="ot">&lt;-</span> gl_strings <span class="sc">%&gt;%</span> <span class="fu">filter</span>(patient <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(GL_string)</span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>donors <span class="ot">&lt;-</span> gl_strings <span class="sc">%&gt;%</span> <span class="fu">filter</span>(patient <span class="sc">%in%</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>) <span class="sc">%&gt;%</span> <span class="fu">transmute</span>(<span class="at">donor =</span> patient, <span class="at">donors =</span> GL_string)</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Run HCT summary function on all donors with given recipient in both "Xof8" and "Xof10" matching</span></span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> donors <span class="sc">%&gt;%</span></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">match_8 =</span> <span class="fu">map_int</span>(donors, <span class="sc">~</span> <span class="fu">HLA_match_summary_HCT</span>(</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">GL_string_recip =</span> recipient, </span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">GL_string_donor =</span> .x,</span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">match_grade =</span> <span class="st">"Xof8"</span>)</span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>      ),</span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">match_10 =</span> <span class="fu">map_int</span>(donors, <span class="sc">~</span> <span class="fu">HLA_match_summary_HCT</span>(</span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">GL_string_recip =</span> recipient,</span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">GL_string_donor =</span> .x,</span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">match_grade =</span> <span class="st">"Xof10"</span></span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 4
-  donor donors                                                  match_8 match_10
-  &lt;int&gt; &lt;chr&gt;                                                     &lt;int&gt;    &lt;int&gt;
-1     2 HLA-A*02:01+HLA-A*11:05^HLA-C*07:01+HLA-C*07:02^HLA-B*…       0        0
-2     3 HLA-A*02:01+HLA-A*26:18^HLA-C*02:02+HLA-C*03:04^HLA-B*…       0        0
-3     4 HLA-A*29:02+HLA-A*30:02^HLA-C*06:02+HLA-C*07:01^HLA-B*…       1        1
-4     5 HLA-A*02:05+HLA-A*24:02^HLA-C*07:18+HLA-C*12:03^HLA-B*…       1        1</code></pre>
 </div>
 </div>
 <div class="subtitle">
