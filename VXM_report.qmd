@@ -1,0 +1,297 @@
+---
+title: "VXM report"
+format: html
+params:
+  MRN_patient: "6535295455"
+  First_name_donor: "XDHZ231"
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+library(RSQLite)
+library(kableExtra)
+library(immunogenetr)
+
+con <- dbConnect(
+  drv = SQLite(),
+  dbname = "synthetic_LIS_database.db", # The file that contains our database
+  extended_types = T
+)
+
+# Create an R object for the "Patient" table in the database.
+(Patient_table <- tbl(con, "Patient"))
+
+# The parameters cannot be directly translated to SQL code below, so it is first put into an R element here, and that element is called in the code below.
+MRN_patient <- params$MRN_patient
+
+# Connecting to the Patient table in LIS, and pulling out the entry for the patient.
+(Patient <- tbl(con, "Patient")
+  %>% select(PatientId, HospitalID, firstnm, lastnm, DOB, ABOCd, UNOSCPRAAmt, categoryCd:GenderCd, PatientTypeCd, A1Cd:dq2cd, mA1Cd:mDPB12cd, StatusCd, UnacceptAntigenTxt, ModerateRiskAntibodyTxt, UNOSUnacceptAntigenTxt)
+  %>% filter(HospitalID == MRN_patient)
+  %>% as_tibble()
+  %>% rename(ModerateRiskAntibodyTxt_report = ModerateRiskAntibodyTxt)
+)
+
+# Extracting the PatientId from LIS, which will allow for linking to the donor
+Patient_Id <- Patient$PatientId
+
+# Connecting to the RelatedPatient table in LIS
+(RelatedPatient <- tbl(con, "RelatedPatient")
+  %>% select(CaseId, RelatedPatientID, RelationshipTypeCd))
+
+# Connecting to the Patient table again, but this time to get the donor info out (donors are also stored in the Patient table in LIS)
+(Donor <- tbl(con, "Patient")
+  %>% select(PatientId, HospitalID, firstnm, lastnm, DOB, ABOCd, categoryCd:GenderCd, PatientTypeCd, A1Cd:dq2cd, mA1Cd:mDPB12cd)
+)
+
+# Connecting to the PatientCase table, and linking to the RelatedPatient and Donor tables to get donors
+(PatientCase <- tbl(con, "PatientCase")
+  %>% select(PatientId, CaseId)
+  %>% filter(PatientId == Patient_Id)
+  %>% left_join(RelatedPatient, by = "CaseId")
+  %>% left_join(Donor, by = c("RelatedPatientID" = "PatientId"))
+  %>% as_tibble()
+)
+
+# Linking donors to the patient record, and selecting for the donor of interest
+(Case <- Patient
+  %>% left_join(PatientCase, by = "PatientId", suffix = c(".recipient", ".donor"))
+  %>% filter(firstnm.donor == str_trim(params$First_name_donor))
+  # Keep only the first row if the donor is listed more than once
+  %>% slice_head(n = 1)
+)
+
+# Create GL strings of recipient and donor typing, truncated to 2 fields, using immunogenetr functions.
+(GL_string_recip_LR <- HLA_columns_to_GLstring(
+  Case,
+  c(A1Cd.recipient:dq2cd.recipient),
+  prefix_to_remove = "m",
+  suffix_to_remove = "Cd.recipient"
+) %>% HLA_truncate()
+)
+
+(GL_string_donor_LR <- HLA_columns_to_GLstring(
+  Case,
+  c(A1Cd.donor:dq2cd.donor),
+  prefix_to_remove = "m",
+  suffix_to_remove = "Cd.donor"
+) %>% HLA_truncate()
+)
+
+# Add the GL strings to the Case table.
+(Case <- Case
+  %>% mutate(
+    GL_string_recip_LR = GL_string_recip_LR,
+    GL_string_donor_LR = GL_string_donor_LR
+  )
+)
+```
+
+```{r}
+#| include: false
+# Create recipient and donor typing and mismatch table
+
+# Recipient typing
+(Recipient_typing <- Case
+  %>% select(A1Cd.recipient:dq2cd.recipient)
+)
+
+(Recipient_typing_1 <- Recipient_typing
+  %>% select(!contains("2"))
+  %>% rename(A = A1Cd.recipient)
+  %>% rename(B = B1Cd.recipient)
+  %>% rename(Bw = BW1Cd.recipient)
+  %>% rename(Cw = Cw1Cd.recipient)
+  %>% rename(DR = DR1Cd.recipient)
+  %>% rename(DR5X = drw1cd.recipient)
+  %>% rename(DQ = dq1cd.recipient)
+)
+
+(Recipient_typing_2 <- Recipient_typing
+  %>% select(contains("2"))
+  %>% rename(A = A2Cd.recipient)
+  %>% rename(B = B2Cd.recipient)
+  %>% rename(Bw = Bw2Cd.recipient)
+  %>% rename(Cw = Cw2Cd.recipient)
+  %>% rename(DR = DR2Cd.recipient)
+  %>% rename(DR5X = drw2cd.recipient)
+  %>% rename(DQ = dq2cd.recipient)
+)
+
+
+(Recipient_typing_report <- bind_rows(Recipient_typing_1, Recipient_typing_2)
+  %>% mutate(Case = "Recipient", .before = A)
+)
+
+# Recording (or overwriting) new values in the data frame - this is used to delete "Recipient" on the second row, to make the table look nicer, and then to add a new, blank row so that there will be a space between recipient and donor typing when they are joined below.
+# data.frame[row_number, column_number] = new_value
+Recipient_typing_report[2, 1] <- ""
+# Recipient_typing_report[3, 1] = ""
+print(Recipient_typing_report)
+
+# Donor typing
+(Donor_typing <- Case
+  %>% select(A1Cd.donor:dq2cd.donor)
+)
+
+(Donor_typing_1 <- Donor_typing
+  %>% select(!contains("2"))
+  %>% rename(A = A1Cd.donor)
+  %>% rename(B = B1Cd.donor)
+  %>% rename(Bw = BW1Cd.donor)
+  %>% rename(Cw = Cw1Cd.donor)
+  %>% rename(DR = DR1Cd.donor)
+  %>% rename(DR5X = drw1cd.donor)
+  %>% rename(DQ = dq1cd.donor)
+)
+
+(Donor_typing_2 <- Donor_typing
+  %>% select(contains("2"))
+  %>% rename(A = A2Cd.donor)
+  %>% rename(B = B2Cd.donor)
+  %>% rename(Bw = Bw2Cd.donor)
+  %>% rename(Cw = Cw2Cd.donor)
+  %>% rename(DR = DR2Cd.donor)
+  %>% rename(DR5X = drw2cd.donor)
+  %>% rename(DQ = dq2cd.donor)
+)
+
+(Donor_typing_report <- bind_rows(Donor_typing_1, Donor_typing_2)
+  %>% mutate(Case = "Donor", .before = A)
+)
+
+# data.frame[row_number, column_number] = new_value
+Donor_typing_report[2, 1] <- ""
+# Donor_typing_report[3, 1] = ""
+
+print(Donor_typing_report)
+
+# Calculate MM numbers to go below recipient and donor typing.
+(MM_by_locus <- Case
+  %>% mutate(A = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-A", direction = "SOT", homozygous_count = 1)))
+  %>% mutate(B = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-B", direction = "SOT", homozygous_count = 1)))
+  %>% mutate(Bw = "")
+  %>% mutate(Cw = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-Cw", direction = "SOT", homozygous_count = 1)))
+  %>% mutate(DR = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DR", direction = "SOT", homozygous_count = 1)))
+  %>% mutate(DR5X = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DR51/52/53", direction = "SOT", homozygous_count = 1)))
+  %>% mutate(DQ = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DQ", direction = "SOT", homozygous_count = 1)))
+  # %>% mutate(DQA1 = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DQA1", direction = "SOT", homozygous_count = 1)))
+  # %>% mutate(DPB1 = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DPB1", direction = "SOT", homozygous_count = 1)))
+  # %>% mutate(DPA1 = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DPA1", direction = "SOT", homozygous_count = 1)))
+  %>% select(A, B, Bw, Cw, DR, DR5X, DQ)
+  %>% mutate(Case = "Mismatches", .before = A)
+)
+
+# Format the final table and clean it up.
+(total_typing_report <- bind_rows(Recipient_typing_report, Donor_typing_report, MM_by_locus)
+  %>% mutate(across(everything(), ~ replace_na(.x, "")))
+)
+```
+
+
+```{r}
+#| include: false
+# Get information on SAB tests
+
+# Connecting to the Test table in LIS.
+(Test <- tbl(con, "Test")
+  %>% select(TestId:TestTypeCd, TestMethodCd, SpecificityTxt, ModerateRiskAntibodyTxt, LowRiskAntibodyTxt, DilutionTxt)
+)
+
+# Connecting to the TestDetail table in LIS.
+(TestDetail <- tbl(con, "TestDetail")
+  %>% select(TestId, TestDetailTypeCd, SingleAgBead, SingleAgRaw, SingleAgNormalized, SingleAgSpecAbbr, SingleAgSpecificity)
+)
+
+# Connecting to the Sample table in LIS.
+(Sample <- tbl(con, "Sample")
+  %>% select(PatientId, SampleID, SampleNbr, SampleDt, SpecimenTypeCd, StatusCd)
+  %>% rename(SampleId = SampleID)
+  # Filter for the samples for this patient.
+  %>% filter(PatientId == Patient_Id)
+  %>% left_join(Test, by = "SampleId")
+  %>% filter(TestMethodCd == "Class I SAB" | TestMethodCd == "Class II SAB")
+  %>% left_join(TestDetail, by = "TestId")
+  %>% filter(!is.na(SingleAgNormalized))
+  %>% as_tibble()
+)
+
+# Join the SAB tests to the table with recipient and donor information.
+(Case_SAB_tests <- Case
+  %>% left_join(Sample, by = "PatientId")
+  # Filter for neat samples
+  %>% filter(DilutionTxt == "" | DilutionTxt == "1:1")
+)
+```
+
+```{r}
+#| include: false
+# Filter the bead result table for specificities corresponding to DSAs.
+(Patient_DSAs_LR <- Case_SAB_tests
+  %>% select(SampleId:SampleDt, GL_string_donor_LR, SingleAgNormalized, SingleAgSpecAbbr)
+  # Add HLA- prefixes to the bead specificities.
+  %>% mutate(SingleAgSpecAbbr = HLA_prefix_add(SingleAgSpecAbbr))
+  # Extract just the B specificities, without the Bw4/w6
+  %>% mutate(SingleAgSpecAbbr = str_extract(SingleAgSpecAbbr, "HLA-[:alnum:]+"))
+  # Determine if each bead represents a DSA by searching the the donor GL string for the bead specificity.
+  %>% filter(str_detect(GL_string_donor_LR, GLstring_regex(SingleAgSpecAbbr)))
+)
+```
+**Patient:** `r Case$lastnm.recipient`, `r Case$firstnm.recipient`  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  **MRN:** `r Case$HospitalID.recipient`  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
+**Donor:** `r Case$firstnm.donor` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  **DOB:** `r Case$DOB.donor` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    
+**Organ type:** `r Case$categoryCd.recipient` &nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+
+```{r}
+#| echo: false
+# Table of typing
+kbl(total_typing_report, booktabs = TRUE, caption = "Typing", col.names = c("", "A", "B", "Bw", "Cw", "DR", "DR51/52/53", "DQ")) %>%
+  kable_styling(full_width = T) %>%
+  column_spec(1, width = "1.7cm") %>%
+  column_spec(2, width = "0.7cm") %>%
+  column_spec(3, width = "0.7cm") %>%
+  column_spec(4, width = "0.7cm") %>%
+  column_spec(5, width = "0.7cm") %>%
+  column_spec(6, width = "0.7cm") %>%
+  column_spec(7, width = "1cm") %>%
+  column_spec(8, width = "0.7cm") %>%
+  row_spec(2, hline_after = TRUE) %>%
+  row_spec(4, hline_after = TRUE)
+```
+
+```{r}
+#| include: false
+# Extract low res mismatches for printing on report
+(LR_MM <- HLA_mismatched_alleles(GL_string_recip_LR, GL_string_donor_LR, c("HLA-A", "HLA-B", "HLA-Cw", "HLA-DR", "HLA-DR51/52/53", "HLA-DQ"), direction = "SOT", homozygous_count = 1)
+  %>% as_tibble()
+  %>% separate_longer_delim(value, ", ")
+  %>% separate_wider_delim(value, names = c("locus", "mismatch"), delim = "=")
+  %>% mutate(mismatch = na_if(mismatch, "NA"))
+  %>% select(mismatch)
+  %>% separate_longer_delim(mismatch, "+")
+  %>% mutate(mismatch = HLA_prefix_remove(mismatch, keep_locus = TRUE))
+  %>% pull(mismatch)
+  %>% str_flatten(collapse = ", ", na.rm = TRUE)
+  %>% str_escape()
+)
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+
+**Mismatched donor antigens:** `r LR_MM`   
+
+**A,B,DR,DQ summary matching:** `r MM_by_locus$A`A, `r MM_by_locus$B`B, `r MM_by_locus$DR`DR, `r MM_by_locus$DQ`DQ mismatch  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+
+
+
+```{r Graphing DSAs}
+#| echo: false
+# Graph LR DSAs
+ggplot(Patient_DSAs_LR, aes(x = SampleDt, y = SingleAgNormalized, color = SingleAgSpecAbbr)) +
+  geom_point() +
+  stat_summary(aes(y = SingleAgNormalized), fun = mean, geom = "line") +
+  geom_hline(yintercept = 1000) +
+  labs(x = "Sample date", y = "MFI", title = "Low-resolution DSAs", color = "DSA") +
+  theme_bw()
+```
