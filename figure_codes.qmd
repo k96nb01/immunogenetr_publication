@@ -50,11 +50,7 @@ options(width = 10000)
 ```{r}
 # Load in libraries used across figures
 library(immunogenetr)
-library(dplyr) # uses functions: %>%, relocate, mutate, filter, select, across, rename_with, transmute
-library(stringr) # uses function: str_detect
-library(tibble) # uses function: tibble
-library(purrr) # uses function: map_int
-
+library(tidyverse) 
 ```
 
 ::: {.subtitle}
