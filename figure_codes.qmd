@@ -42,13 +42,15 @@ reset_data <- function(){
   assign("HLA_typing_1", HLA_typing_1_base,  envir = .GlobalEnv)
   assign("HLA_typing_LIS", HLA_typing_LIS_base, envir = .GlobalEnv)
 }
+
+options(width = 10000)
 ```
 
 
 ```{r}
 # Load in libraries used across figures
 library(immunogenetr)
-library(dplyr) # uses functions: %>%, mutate, filter, select, across, rename_with, transmute
+library(dplyr) # uses functions: %>%, relocate, mutate, filter, select, across, rename_with, transmute
 library(stringr) # uses function: str_detect
 library(tibble) # uses function: tibble
 library(purrr) # uses function: map_int
@@ -86,12 +88,11 @@ HLA_typing_1$mB2Cd <- sub("^B\\*", "", HLA_typing_1$mB2Cd)
 HLA_typing_1$mDRB3451Cd <- sub("^DRB", "", HLA_typing_1$mDRB3451Cd)
 HLA_typing_1$mDRB3452Cd <- sub("^DRB", "", HLA_typing_1$mDRB3452Cd)
 
-HLA_typing_1$mDRB11Cd <- sub("^DRB", "", HLA_typing_1$mDRB11Cd)
-HLA_typing_1$mDRB12Cd <- sub("^DRB", "", HLA_typing_1$mDRB12Cd)
+HLA_typing_1$mDRB11Cd <- sub("^DRB1\\*", "", HLA_typing_1$mDRB11Cd)
+HLA_typing_1$mDRB12Cd <- sub("^DRB1\\*", "", HLA_typing_1$mDRB12Cd)
+HLA_typing_1 <- HLA_typing_1 %>% relocate(c(mDRB11Cd, mDRB12Cd), .before = mDRB3451Cd)
 
 print(HLA_typing_1)
-
-
 
 # Build GL strings 
 GL_strings <- HLA_typing_1 %>%
@@ -132,6 +133,8 @@ HLA_typing_LIS[1, 2] <- "24:02novel"
 HLA_typing_LIS[2, 3] <- "74:01N"
 HLA_typing_LIS[3, 3] <- "32:XX"
 HLA_typing_LIS[3, 5] <- "blank"
+
+print(HLA_typing_LIS)
 
 # Run HLA_validate()
 HLA_typing_LIS %>%
