@@ -1,5 +1,5 @@
 ---
-title: "Figure Codes"
+title: "Figure Code"
 format: html
 theme: cosmo
 page-layout: full
@@ -19,46 +19,51 @@ smooth-scroll: true
 
 ```
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
-options(tidyverse.quiet = TRUE, dplyr.summarise.inform = FALSE)
-
-suppressPackageStartupMessages({
-  library(immunogenetr)
-  library(dplyr)
-  library(stringr)
-  library(tibble)
-  library(purrr)
-})
-
-HLA_typing_1 <- tibble::as_tibble(HLA_typing_1)
-HLA_typing_LIS <- tibble::as_tibble(HLA_typing_LIS)
-
-HLA_typing_1_base <- HLA_typing_1
-HLA_typing_LIS_base <- HLA_typing_LIS
-
-
-reset_data <- function(){
-  assign("HLA_typing_1", HLA_typing_1_base,  envir = .GlobalEnv)
-  assign("HLA_typing_LIS", HLA_typing_LIS_base, envir = .GlobalEnv)
-}
-
-options(width = 10000)
-```
-
-
 ```{r}
-# Load in libraries used across figures
+#| include: false
+# Load libraries used across figures
 library(immunogenetr)
 library(tidyverse) 
 ```
 
 ::: {.subtitle}
-Figure one
+Figure 1
 :::
 
 ```{r}
+# Adjust table for figure
+(HLA_typing_figure_1 <- HLA_typing_1
+  # Select the columns for HLA-A, B, DRB1 and DRB3/5/5
+  %>% select(patient, A1:A2, B1:B2, DRB1_1:DRB1_2, DRB345_1:DRB345_2)
+  # Rename the columns to resemble a clinical LIS
+  %>% rename_with(~ str_replace(., "^", "m"))
+  %>% rename_with(~ str_replace(., "_", ""))
+  %>% rename_with(~ str_replace(., "$", "Cd"))
+  # Add a blank value to show how the function handles this entry
+  %>% mutate(mA2Cd = if_else(mA2Cd == "A*11:05", "blank", mA2Cd))
+  # Remove locus designations
+  %>% mutate(across(mA1Cd:mDRB12Cd, ~ str_replace(., "[:alnum:]+\\*", "")))
+  %>% mutate(across(mDRB3451Cd:mDRB3452Cd, ~ str_replace(., "DRB", "")))
+  # Fix the name of the patient column
+  %>% rename(patient = 1)
+  # Keep the first three rows
+  %>% slice(1:3)
+  )
 
+# Use `HLA_columns_to_GLstring` to build GL strings from table
+(GL_strings_figure_1 <- HLA_typing_figure_1 
+  %>% mutate(
+    GL_string = HLA_columns_to_GLstring(.,
+      HLA_typing_columns = mA1Cd:mDRB3452Cd,
+      prefix_to_remove = "m",
+      suffix_to_remove = "Cd"
+    )) 
+  %>% select(patient, GL_string)
+  )
+```
+
+
+```{r}
 # Adjust data
 HLA_typing_1 <- HLA_typing_1[, -5]
 HLA_typing_1 <- HLA_typing_1[, -4]
