@@ -124,10 +124,9 @@ Patient_Id <- Patient$PatientId
   %>% mutate(Case = "Recipient", .before = A)
 )
 
-# Recording (or overwriting) new values in the data frame - this is used to delete "Recipient" on the second row, to make the table look nicer, and then to add a new, blank row so that there will be a space between recipient and donor typing when they are joined below.
+# Recording (or overwriting) new values in the data frame - this is used to delete "Recipient" on the second row to make the table look nicer.
 # data.frame[row_number, column_number] = new_value
 Recipient_typing_report[2, 1] <- ""
-# Recipient_typing_report[3, 1] = ""
 print(Recipient_typing_report)
 
 # Donor typing
@@ -161,9 +160,7 @@ print(Recipient_typing_report)
   %>% mutate(Case = "Donor", .before = A)
 )
 
-# data.frame[row_number, column_number] = new_value
 Donor_typing_report[2, 1] <- ""
-# Donor_typing_report[3, 1] = ""
 
 print(Donor_typing_report)
 
@@ -176,9 +173,6 @@ print(Donor_typing_report)
   %>% mutate(DR = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DR", direction = "SOT", homozygous_count = 1)))
   %>% mutate(DR5X = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DR51/52/53", direction = "SOT", homozygous_count = 1)))
   %>% mutate(DQ = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DQ", direction = "SOT", homozygous_count = 1)))
-  # %>% mutate(DQA1 = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DQA1", direction = "SOT", homozygous_count = 1)))
-  # %>% mutate(DPB1 = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DPB1", direction = "SOT", homozygous_count = 1)))
-  # %>% mutate(DPA1 = as.character(HLA_mismatch_number(GL_string_recip_LR, GL_string_donor_LR, "HLA-DPA1", direction = "SOT", homozygous_count = 1)))
   %>% select(A, B, Bw, Cw, DR, DR5X, DQ)
   %>% mutate(Case = "Mismatches", .before = A)
 )
