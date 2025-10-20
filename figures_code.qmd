@@ -1,5 +1,5 @@
 ---
-title: "Figure Code"
+title: "Figures Code"
 format: html
 theme: cosmo
 page-layout: full
@@ -36,16 +36,14 @@ Figure 1
   # Select the columns for HLA-A, B, DRB1 and DRB3/5/5
   %>% select(patient, A1:A2, B1:B2, DRB1_1:DRB1_2, DRB345_1:DRB345_2)
   # Rename the columns to resemble a clinical LIS
-  %>% rename_with(~ str_replace(., "^", "m"))
-  %>% rename_with(~ str_replace(., "_", ""))
-  %>% rename_with(~ str_replace(., "$", "Cd"))
+  %>% rename_with(~ str_replace(., "^", "m"), .cols = A1:DRB345_2)
+  %>% rename_with(~ str_replace(., "_", ""), .cols = mA1:mDRB345_2)
+  %>% rename_with(~ str_replace(., "$", "Cd"), .cols = mA1:mDRB3452)
   # Add a blank value to show how the function handles this entry
   %>% mutate(mA2Cd = if_else(mA2Cd == "A*11:05", "blank", mA2Cd))
   # Remove locus designations
   %>% mutate(across(mA1Cd:mDRB12Cd, ~ str_replace(., "[:alnum:]+\\*", "")))
   %>% mutate(across(mDRB3451Cd:mDRB3452Cd, ~ str_replace(., "DRB", "")))
-  # Fix the name of the patient column
-  %>% rename(patient = 1)
   # Keep the first three rows
   %>% slice(1:3)
   )
