@@ -118,7 +118,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Figure 1</p>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust table for figure</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a table for Fig. 1.</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>(HLA_typing_figure_1 <span class="ot">&lt;-</span> HLA_typing_1</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select the columns for HLA-A, B, DRB1 and DRB3/5/5</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">select</span>(patient, A1<span class="sc">:</span>A2, B1<span class="sc">:</span>B2, DRB1_1<span class="sc">:</span>DRB1_2, DRB345_1<span class="sc">:</span>DRB345_2)</span>
@@ -133,7 +133,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="fu">across</span>(mDRB3451Cd<span class="sc">:</span>mDRB3452Cd, <span class="sc">~</span> <span class="fu">str_replace</span>(., <span class="st">"DRB"</span>, <span class="st">""</span>)))</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Keep the first three rows</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 9
   patient mA1Cd mA2Cd mB1Cd mB2Cd mDRB11Cd mDRB12Cd mDRB3451Cd mDRB3452Cd
@@ -142,16 +142,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 2       2 02:01 blank 07:02 08:01 03:01    04:01    3*01:01    4*01:03   
 3       3 02:01 26:18 27:05 54:01 04:04    14:54    3*02:02    4*01:03   </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use `HLA_columns_to_GLstring` to build GL strings from table</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(GL_strings_figure_1 <span class="ot">&lt;-</span> HLA_typing_figure_1 </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use `HLA_columns_to_GLstring` to build GL strings from the table.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(GL_strings_figure_1 <span class="ot">&lt;-</span> HLA_typing_figure_1</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">GL_string =</span> <span class="fu">HLA_columns_to_GLstring</span>(.,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">HLA_typing_columns =</span> mA1Cd<span class="sc">:</span>mDRB3452Cd,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">prefix_to_remove =</span> <span class="st">"m"</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">suffix_to_remove =</span> <span class="st">"Cd"</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    )) </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">select</span>(patient, GL_string)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">GL_string =</span> <span class="fu">HLA_columns_to_GLstring</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      .,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">HLA_typing_columns =</span> mA1Cd<span class="sc">:</span>mDRB3452Cd,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">prefix_to_remove =</span> <span class="st">"m"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">suffix_to_remove =</span> <span class="st">"Cd"</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">select</span>(patient, GL_string)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 2
   patient GL_string                                                                                                  
@@ -201,82 +203,70 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>[1] "HLA-A*02:01+HLA-A*68:01/HLA-A*68:06"</code></pre>
 </div>
 </div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
 <div class="subtitle">
-<p>Figure three</p>
+<p>Figure 3</p>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Adjust data</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>HLA_typing_LIS[<span class="dv">1</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"24:02novel"</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>HLA_typing_LIS[<span class="dv">2</span>, <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">"74:01N"</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>HLA_typing_LIS[<span class="dv">3</span>, <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">"32:XX"</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>HLA_typing_LIS[<span class="dv">3</span>, <span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="st">"blank"</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(HLA_typing_LIS)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare an example table</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>(Fig_3_table <span class="ot">&lt;-</span> HLA_typing_LIS</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Change some values to show how the function handles specific inputs</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">mA1Cd.recipient =</span> <span class="fu">if_else</span>(mA1Cd.recipient <span class="sc">==</span> <span class="st">"24:02"</span>, <span class="st">"24:02novel"</span>, mA1Cd.recipient))</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">mA2Cd.recipient =</span> <span class="fu">if_else</span>(mA2Cd.recipient <span class="sc">==</span> <span class="st">"74:01"</span>, <span class="st">"74:01N"</span>, mA2Cd.recipient))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">mA2Cd.recipient =</span> <span class="fu">if_else</span>(mA2Cd.recipient <span class="sc">==</span> <span class="st">"32:01"</span>, <span class="st">"32:XX"</span>, mA2Cd.recipient))</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">mB2Cd.recipient =</span> <span class="fu">if_else</span>(mB2Cd.recipient <span class="sc">==</span> <span class="st">""</span>, <span class="st">"blank"</span>, mB2Cd.recipient))</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Keep the first 3 rows</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Keep the HLA-A, B and C columns</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="sc">%&gt;%</span> <span class="fu">select</span>(mA1Cd.recipient<span class="sc">:</span>mC2Cd.recipient)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 23
-   patient mA1Cd.recipient mA2Cd.recipient mB1Cd.recipient mB2Cd.recipient mC1Cd.recipient mC2Cd.recipient
-     &lt;int&gt; &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;          
- 1       1 24:02novel      02:01           40:02           "40:01"         03:04           ""             
- 2       2 03:01           74:01N          53:01           "57:03"         04:01           "07:01"        
- 3       3 11:01           32:XX           52:01           "blank"         12:02           ""             
- 4       4 03:01           30:02           14:02           ""              08:02           ""             
- 5       5 01:01           24:02           07:02           ""              07:02           ""             
- 6       6 02:01           30:02           39:11           "41:01"         07:02           "17:01"        
- 7       7 02:17           32:01           40:02           ""              02:02           "03:05"        
- 8       8 11:01           23:01           15:17           "44:03"         07:01           "16:01"        
- 9       9 03:01           68:02           08:01           "15:03"         02:10           "03:04"        
-10      10 01:01           02:01           08:01           "07:02"         07:01           "05:01"        
-# ℹ 16 more variables: mDRB11Cd.recipient &lt;chr&gt;, mDRB12Cd.recipient &lt;chr&gt;, mDRB31cd.recipient &lt;chr&gt;,
-#   mDRB32cd.recipient &lt;chr&gt;, mDRB41cd.recipient &lt;chr&gt;, mDRB42cd.recipient &lt;chr&gt;, mDRB51cd.recipient &lt;chr&gt;,
-#   mDRB52cd.recipient &lt;chr&gt;, mDQA11Cd.recipient &lt;chr&gt;, mDQA12Cd.recipient &lt;chr&gt;, mDQB11cd.recipient &lt;chr&gt;,
-#   mDQB12cd.recipient &lt;chr&gt;, mDPA11Cd.recipient &lt;chr&gt;, mDPA12Cd.recipient &lt;chr&gt;, mDPB11cd.recipient &lt;chr&gt;,
-#   mDPB12cd.recipient &lt;chr&gt;</code></pre>
+<pre><code># A tibble: 3 × 6
+  mA1Cd.recipient mA2Cd.recipient mB1Cd.recipient mB2Cd.recipient mC1Cd.recipient mC2Cd.recipient
+  &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;          
+1 24:02novel      02:01           40:02           40:01           03:04           ""             
+2 03:01           74:01N          53:01           57:03           04:01           "07:01"        
+3 11:01           32:XX           52:01           blank           12:02           ""             </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run HLA_validate()</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>HLA_typing_LIS <span class="sc">%&gt;%</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">across</span>(</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>       mA1Cd.recipient<span class="sc">:</span>mDPB12cd.recipient, </span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>       HLA_validate)</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>     )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run HLA_validate on the table</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>Fig_3_table <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>      mA1Cd.recipient<span class="sc">:</span>mC2Cd.recipient,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>      HLA_validate</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 23
-   patient mA1Cd.recipient mA2Cd.recipient mB1Cd.recipient mB2Cd.recipient mC1Cd.recipient mC2Cd.recipient
-     &lt;int&gt; &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;          
- 1       1 24:02           02:01           40:02           40:01           03:04           &lt;NA&gt;           
- 2       2 03:01           74:01N          53:01           57:03           04:01           07:01          
- 3       3 11:01           32:             52:01           &lt;NA&gt;            12:02           &lt;NA&gt;           
- 4       4 03:01           30:02           14:02           &lt;NA&gt;            08:02           &lt;NA&gt;           
- 5       5 01:01           24:02           07:02           &lt;NA&gt;            07:02           &lt;NA&gt;           
- 6       6 02:01           30:02           39:11           41:01           07:02           17:01          
- 7       7 02:17           32:01           40:02           &lt;NA&gt;            02:02           03:05          
- 8       8 11:01           23:01           15:17           44:03           07:01           16:01          
- 9       9 03:01           68:02           08:01           15:03           02:10           03:04          
-10      10 01:01           02:01           08:01           07:02           07:01           05:01          
-# ℹ 16 more variables: mDRB11Cd.recipient &lt;chr&gt;, mDRB12Cd.recipient &lt;chr&gt;, mDRB31cd.recipient &lt;chr&gt;,
-#   mDRB32cd.recipient &lt;chr&gt;, mDRB41cd.recipient &lt;chr&gt;, mDRB42cd.recipient &lt;chr&gt;, mDRB51cd.recipient &lt;chr&gt;,
-#   mDRB52cd.recipient &lt;chr&gt;, mDQA11Cd.recipient &lt;chr&gt;, mDQA12Cd.recipient &lt;chr&gt;, mDQB11cd.recipient &lt;chr&gt;,
-#   mDQB12cd.recipient &lt;chr&gt;, mDPA11Cd.recipient &lt;chr&gt;, mDPA12Cd.recipient &lt;chr&gt;, mDPB11cd.recipient &lt;chr&gt;,
-#   mDPB12cd.recipient &lt;chr&gt;</code></pre>
+<pre><code># A tibble: 3 × 6
+  mA1Cd.recipient mA2Cd.recipient mB1Cd.recipient mB2Cd.recipient mC1Cd.recipient mC2Cd.recipient
+  &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;          
+1 24:02           02:01           40:02           40:01           03:04           &lt;NA&gt;           
+2 03:01           74:01N          53:01           57:03           04:01           07:01          
+3 11:01           32:             52:01           &lt;NA&gt;            12:02           &lt;NA&gt;           </code></pre>
 </div>
 </div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
 <div class="subtitle">
-<p>Figure four</p>
+<p>Figure 4</p>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>GL_string <span class="ot">&lt;-</span> <span class="st">"HLA-DQA1*03:03:01/HLA-DQA1*03:03:02/HLA-DQA1*03:03:03"</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#To retain duplicates: </span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>GL_string <span class="sc">%&gt;%</span> <span class="fu">HLA_truncate</span> (<span class="at">fields =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an example GL string.</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>(GL_string <span class="ot">&lt;-</span> <span class="st">"HLA-DQA1*03:03:01/HLA-DQA1*03:03:02/HLA-DQA1*03:03:03"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "HLA-DQA1*03:03:01/HLA-DQA1*03:03:02/HLA-DQA1*03:03:03"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use `HLA_truncate` to reduce to 2 fields, using the default `remove_duplicates = FALSE` argument.</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>GL_string <span class="sc">%&gt;%</span> <span class="fu">HLA_truncate</span>(<span class="at">fields =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "HLA-DQA1*03:03/HLA-DQA1*03:03/HLA-DQA1*03:03"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#To remove duplicates: </span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>GL_string <span class="sc">%&gt;%</span> <span class="fu">HLA_truncate</span> (<span class="at">fields =</span> <span class="dv">2</span>, <span class="at">remove_duplicates =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using `remove_duplicates = TRUE` the truncated GL string is simplified.</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>GL_string <span class="sc">%&gt;%</span> <span class="fu">HLA_truncate</span>(<span class="at">fields =</span> <span class="dv">2</span>, <span class="at">remove_duplicates =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "HLA-DQA1*03:03"</code></pre>
 </div>
 </div>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
 <div class="subtitle">
 <p>Supplemental table 1 links</p>
 </div>
